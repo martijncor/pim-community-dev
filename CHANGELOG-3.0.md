@@ -5,6 +5,7 @@
 - TIP-236: Merge Oro User bundle/component into Akeneo User bundle/component 
 - GITHUB-8451: Add basic compatibility for PHP 7.2  (Thanks [janmyszkier](https://github.com/janmyszkier)!)
 - PIM-7371: Improve the performance to display the category tree in the product grid
+- Centralized technical requirements checks to reuse them on standard edition
 
 ## Enhancements
 
