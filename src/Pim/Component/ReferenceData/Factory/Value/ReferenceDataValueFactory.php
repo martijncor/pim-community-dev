@@ -2,7 +2,7 @@
 
 namespace Pim\Component\ReferenceData\Factory\Value;
 
-use Akeneo\Pim\Enrichment\Component\Product\Factory\Value\ValueFactoryInterface;
+use Akeneo\Pim\Enrichment\Component\Product\Factory\Value\AbstractValueFactory;
 use Akeneo\Pim\Structure\Component\Model\AttributeInterface;
 use Akeneo\Tool\Component\StorageUtils\Exception\InvalidPropertyException;
 use Akeneo\Tool\Component\StorageUtils\Exception\InvalidPropertyTypeException;
@@ -19,7 +19,7 @@ use Pim\Component\ReferenceData\Repository\ReferenceDataRepositoryResolverInterf
  * @copyright 2017 Akeneo SAS (http://www.akeneo.com)
  * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
  */
-class ReferenceDataValueFactory implements ValueFactoryInterface
+class ReferenceDataValueFactory extends AbstractValueFactory
 {
     /** @var ReferenceDataRepositoryResolverInterface */
     protected $repositoryResolver;
@@ -52,14 +52,7 @@ class ReferenceDataValueFactory implements ValueFactoryInterface
     {
         $this->checkData($attribute, $data);
 
-        if (null !== $data) {
-            $repository = $this->repositoryResolver->resolve($attribute->getReferenceDataName());
-            $data = $this->getReferenceData($attribute, $repository, $data);
-        }
-
-        $value = new $this->productValueClass($attribute, $channelCode, $localeCode, $data);
-
-        return $value;
+        return $this->doCreate($attribute, $channelCode, $localeCode, $data);
     }
 
     /**
@@ -91,24 +84,9 @@ class ReferenceDataValueFactory implements ValueFactoryInterface
                 $data
             );
         }
-    }
 
-    /**
-     * Finds a reference data by code.
-     *
-     * @param AttributeInterface               $attribute
-     * @param ReferenceDataRepositoryInterface $repository
-     * @param string                           $referenceDataCode
-     *
-     * @throws InvalidPropertyException
-     * @return ReferenceDataInterface
-     */
-    protected function getReferenceData(
-        AttributeInterface $attribute,
-        ReferenceDataRepositoryInterface $repository,
-        $referenceDataCode
-    ) {
-        $referenceData = $repository->findOneBy(['code' => $referenceDataCode]);
+        $repository = $this->repositoryResolver->resolve($attribute->getReferenceDataName());
+        $referenceData = $repository->findOneBy(['code' => $data]);
 
         if (null === $referenceData) {
             throw InvalidPropertyException::validEntityCodeExpected(
@@ -116,10 +94,8 @@ class ReferenceDataValueFactory implements ValueFactoryInterface
                 'reference data code',
                 sprintf('The code of the reference data "%s" does not exist', $attribute->getReferenceDataName()),
                 static::class,
-                $referenceDataCode
+                $data
             );
         }
-
-        return $referenceData;
     }
 }

@@ -158,14 +158,14 @@ class ProductNormalizer implements NormalizerInterface, SerializerAwareInterface
     {
         $suffix = '';
 
-        if ($value->getAttribute()->isLocalizable()) {
-            $suffix = sprintf('-%s', $value->getLocale());
+        if ($value->isLocalized()) {
+            $suffix = sprintf('-%s', $value->getLocaleCode());
         }
-        if ($value->getAttribute()->isScopable()) {
-            $suffix .= sprintf('-%s', $value->getScope());
+        if ($value->isScoped()) {
+            $suffix .= sprintf('-%s', $value->getScopeCode());
         }
 
-        return $value->getAttribute()->getCode().$suffix;
+        return $value->getAttributeCode().$suffix;
     }
 
     /**

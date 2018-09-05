@@ -13,10 +13,6 @@ use Akeneo\Pim\Enrichment\Component\Product\Model\ValueInterface;
 class ValueCollectionSpec extends ObjectBehavior
 {
     function let(
-        AttributeInterface $length,
-        AttributeInterface $price,
-        AttributeInterface $description,
-        AttributeInterface $releaseDate,
         ChannelInterface $ecommerce,
         ChannelInterface $print,
         LocaleInterface $en_US,
@@ -28,40 +24,32 @@ class ValueCollectionSpec extends ObjectBehavior
         ValueInterface $value5,
         ValueInterface $value6
     ) {
-        $length->isUnique()->willReturn(false);
-        $price->isUnique()->willReturn(false);
-        $description->isUnique()->willReturn(false);
-        $releaseDate->isUnique()->willReturn(true);
-
-        $length->getCode()->willReturn('length');
-        $price->getCode()->willReturn('price');
-        $description->getCode()->willReturn('description');
         $ecommerce->getCode()->willReturn('ecommerce');
-        $releaseDate->getCode()->willReturn('release_date');
         $print->getCode()->willReturn('print');
+
         $en_US->getCode()->willReturn('en_US');
         $fr_FR->getCode()->willReturn('fr_FR');
 
-        $value1->getAttribute()->willReturn($length);
-        $value2->getAttribute()->willReturn($price);
-        $value3->getAttribute()->willReturn($description);
-        $value4->getAttribute()->willReturn($description);
-        $value5->getAttribute()->willReturn($description);
-        $value6->getAttribute()->willReturn($releaseDate);
+        $value1->getAttributeCode()->willReturn('length');
+        $value2->getAttributeCode()->willReturn('price');
+        $value3->getAttributeCode()->willReturn('description');
+        $value4->getAttributeCode()->willReturn('description');
+        $value5->getAttributeCode()->willReturn('description');
+        $value6->getAttributeCode()->willReturn('release_date');
 
-        $value1->getScope()->willReturn(null);
-        $value2->getScope()->willReturn(null);
-        $value3->getScope()->willReturn('ecommerce');
-        $value4->getScope()->willReturn('ecommerce');
-        $value5->getScope()->willReturn('print');
-        $value6->getScope()->willReturn(null);
+        $value1->getScopeCode()->willReturn(null);
+        $value2->getScopeCode()->willReturn(null);
+        $value3->getScopeCode()->willReturn('ecommerce');
+        $value4->getScopeCode()->willReturn('ecommerce');
+        $value5->getScopeCode()->willReturn('print');
+        $value6->getScopeCode()->willReturn(null);
 
-        $value1->getLocale()->willReturn(null);
-        $value2->getLocale()->willReturn(null);
-        $value3->getLocale()->willReturn('en_US');
-        $value4->getLocale()->willReturn('fr_FR');
-        $value5->getLocale()->willReturn('en_US');
-        $value6->getLocale()->willReturn(null);
+        $value1->getLocaleCode()->willReturn(null);
+        $value2->getLocaleCode()->willReturn(null);
+        $value3->getLocaleCode()->willReturn('en_US');
+        $value4->getLocaleCode()->willReturn('fr_FR');
+        $value5->getLocaleCode()->willReturn('en_US');
+        $value6->getLocaleCode()->willReturn(null);
 
         $value6->getData()->willReturn('2016-09-12');
 
@@ -75,15 +63,11 @@ class ValueCollectionSpec extends ObjectBehavior
 
     function it_creates_a_collection_from_another(
         ValueCollectionInterface $collection,
-        ValueInterface $value,
-        AttributeInterface $attribute
+        ValueInterface $value
     ) {
-        $attribute->getCode()->willReturn('weight');
-        $attribute->isUnique()->willReturn(false);
-
-        $value->getAttribute()->willReturn($attribute);
-        $value->getScope()->willReturn('ecommerce');
-        $value->getLocale()->willReturn('fr_FR');
+        $value->getAttributeCode()->willReturn('weight');
+        $value->getScopeCode()->willReturn('ecommerce');
+        $value->getLocaleCode()->willReturn('fr_FR');
 
         $collection->toArray()->willReturn([$value]);
         $this->beConstructedThrough('fromCollection', [$collection]);
@@ -150,8 +134,7 @@ class ValueCollectionSpec extends ObjectBehavior
             ]
         );
 
-        $this->getAttributesKeys()->shouldReturn(['price', 'description', 'release_date']);
-        $this->getUniqueValues()->shouldReturn(['release_date-<all_channels>-<all_locales>' => $value6]);
+        $this->getAttributeCodes()->shouldReturn(['price', 'description', 'release_date']);
     }
 
     function it_removes_a_unique_value_by_a_key_and_deletes_indexed_attribute(
@@ -174,8 +157,7 @@ class ValueCollectionSpec extends ObjectBehavior
             ]
         );
 
-        $this->getAttributesKeys()->shouldReturn(['length', 'price', 'description']);
-        $this->getUniqueValues()->shouldReturn([]);
+        $this->getAttributeCodes()->shouldReturn(['length', 'price', 'description']);
     }
 
     function it_removes_a_value_by_a_key_and_keeps_indexed_attribute(
@@ -198,7 +180,7 @@ class ValueCollectionSpec extends ObjectBehavior
             ]
         );
 
-        $this->getAttributesKeys()->shouldReturn(['length', 'price', 'description', 'release_date']);
+        $this->getAttributeCodes()->shouldReturn(['length', 'price', 'description', 'release_date']);
     }
 
     function it_removes_a_unique_value_by_a_key_and_keeps_indexed_attribute(
@@ -221,8 +203,7 @@ class ValueCollectionSpec extends ObjectBehavior
             ]
         );
 
-        $this->getAttributesKeys()->shouldReturn(['length', 'price', 'description']);
-        $this->getUniqueValues()->shouldReturn([]);
+        $this->getAttributeCodes()->shouldReturn(['length', 'price', 'description']);
     }
 
     function it_does_not_removes_a_non_existing_key($value1, $value2, $value3, $value4, $value5, $value6)
@@ -240,7 +221,7 @@ class ValueCollectionSpec extends ObjectBehavior
             ]
         );
 
-        $this->getAttributesKeys()->shouldReturn(['length', 'price', 'description', 'release_date']);
+        $this->getAttributeCodes()->shouldReturn(['length', 'price', 'description', 'release_date']);
     }
 
     function it_removes_a_value_and_deletes_indexed_attribute($value1, $value2, $value3, $value4, $value5, $value6)
@@ -257,7 +238,7 @@ class ValueCollectionSpec extends ObjectBehavior
             ]
         );
 
-        $this->getAttributesKeys()->shouldReturn(['price', 'description', 'release_date']);
+        $this->getAttributeCodes()->shouldReturn(['price', 'description', 'release_date']);
     }
 
     function it_removes_a_unique_value_and_deletes_indexed_attribute(
@@ -280,8 +261,7 @@ class ValueCollectionSpec extends ObjectBehavior
             ]
         );
 
-        $this->getAttributesKeys()->shouldReturn(['length', 'price', 'description']);
-        $this->getUniqueValues()->shouldReturn([]);
+        $this->getAttributeCodes()->shouldReturn(['length', 'price', 'description']);
     }
 
     function it_removes_a_value_and_keeps_indexed_attribute($value1, $value2, $value3, $value4, $value5, $value6)
@@ -298,7 +278,7 @@ class ValueCollectionSpec extends ObjectBehavior
             ]
         );
 
-        $this->getAttributesKeys()->shouldReturn(['length', 'price', 'description', 'release_date']);
+        $this->getAttributeCodes()->shouldReturn(['length', 'price', 'description', 'release_date']);
     }
 
     function it_does_not_removes_a_non_existing_value(
@@ -323,7 +303,7 @@ class ValueCollectionSpec extends ObjectBehavior
             ]
         );
 
-        $this->getAttributesKeys()->shouldReturn(['length', 'price', 'description', 'release_date']);
+        $this->getAttributeCodes()->shouldReturn(['length', 'price', 'description', 'release_date']);
     }
 
     function it_removes_a_value_by_attribute_and_deletes_indexed_attribute(
@@ -331,10 +311,9 @@ class ValueCollectionSpec extends ObjectBehavior
         $value3,
         $value4,
         $value5,
-        $value6,
-        $length
+        $value6
     ) {
-        $this->removeByAttribute($length)->shouldReturn(true);
+        $this->removeByAttributeCode('length')->shouldReturn(true);
 
         $this->toArray()->shouldReturn(
             [
@@ -346,7 +325,7 @@ class ValueCollectionSpec extends ObjectBehavior
             ]
         );
 
-        $this->getAttributesKeys()->shouldReturn(['price', 'description', 'release_date']);
+        $this->getAttributeCodes()->shouldReturn(['price', 'description', 'release_date']);
     }
 
     function it_does_not_removes_values_for_non_present_attribute(
@@ -355,10 +334,9 @@ class ValueCollectionSpec extends ObjectBehavior
         $value3,
         $value4,
         $value5,
-        $value6,
-        AttributeInterface $anotherAttribute
+        $value6
     ) {
-        $this->removeByAttribute($anotherAttribute)->shouldReturn(false);
+        $this->removeByAttributeCode('anotherAttribute')->shouldReturn(false);
 
         $this->toArray()->shouldReturn(
             [
@@ -371,7 +349,7 @@ class ValueCollectionSpec extends ObjectBehavior
             ]
         );
 
-        $this->getAttributesKeys()->shouldReturn(['length', 'price', 'description', 'release_date']);
+        $this->getAttributeCodes()->shouldReturn(['length', 'price', 'description', 'release_date']);
     }
 
     function it_contains_a_key()
@@ -432,15 +410,11 @@ class ValueCollectionSpec extends ObjectBehavior
         $value4,
         $value5,
         $value6,
-        ValueInterface $newValue,
-        AttributeInterface $attribute
+        ValueInterface $newValue
     ) {
-        $attribute->isUnique()->willReturn(false);
-
-        $newValue->getAttribute()->willReturn($attribute);
-        $newValue->getLocale()->willReturn('en_US');
-        $newValue->getScope()->willReturn(null);
-        $attribute->getCode()->willReturn('weight');
+        $newValue->getAttributeCode()->willReturn('weight');
+        $newValue->getLocaleCode()->willReturn('en_US');
+        $newValue->getScopeCode()->willReturn(null);
 
         $this->add($newValue)->shouldReturn(true);
 
@@ -456,88 +430,7 @@ class ValueCollectionSpec extends ObjectBehavior
             ]
         );
 
-        $this->getAttributesKeys()->shouldReturn(['length', 'price', 'description', 'release_date', 'weight']);
-
-        $this->getUniqueValues()->shouldReturn(['release_date-<all_channels>-<all_locales>' => $value6]);
-    }
-
-    function it_adds_new_unique_value(
-        $value1,
-        $value2,
-        $value3,
-        $value4,
-        $value5,
-        $value6,
-        ValueInterface $newValue,
-        AttributeInterface $attribute
-    ) {
-        $attribute->isUnique()->willReturn(true);
-
-        $newValue->getAttribute()->willReturn($attribute);
-        $newValue->getLocale()->willReturn('en_US');
-        $newValue->getScope()->willReturn(null);
-        $newValue->getData()->willReturn('56 KG');
-        $attribute->getCode()->willReturn('weight');
-
-        $this->add($newValue)->shouldReturn(true);
-
-        $this->toArray()->shouldReturn(
-            [
-                'length-<all_channels>-<all_locales>' => $value1,
-                'price-<all_channels>-<all_locales>' => $value2,
-                'description-ecommerce-en_US' => $value3,
-                'description-ecommerce-fr_FR' => $value4,
-                'description-print-en_US' => $value5,
-                'release_date-<all_channels>-<all_locales>' => $value6,
-                'weight-<all_channels>-en_US' => $newValue,
-            ]
-        );
-
-        $this->getAttributesKeys()->shouldReturn(['length', 'price', 'description', 'release_date', 'weight']);
-
-        $this->getUniqueValues()->shouldReturn(
-            [
-                'release_date-<all_channels>-<all_locales>' => $value6,
-                'weight-<all_channels>-en_US' => $newValue,
-            ]
-        );
-    }
-
-    function it_does_not_add_an_empty_value_to_unique_values(
-        $value1,
-        $value2,
-        $value3,
-        $value4,
-        $value5,
-        $value6,
-        ValueInterface $newValue,
-        AttributeInterface $attribute
-    ) {
-        $attribute->isUnique()->willReturn(true);
-
-        $newValue->getAttribute()->willReturn($attribute);
-        $newValue->getLocale()->willReturn('en_US');
-        $newValue->getScope()->willReturn(null);
-        $newValue->getData()->willReturn(null);
-        $attribute->getCode()->willReturn('weight');
-
-        $this->add($newValue)->shouldReturn(true);
-
-        $this->toArray()->shouldReturn(
-            [
-                'length-<all_channels>-<all_locales>' => $value1,
-                'price-<all_channels>-<all_locales>' => $value2,
-                'description-ecommerce-en_US' => $value3,
-                'description-ecommerce-fr_FR' => $value4,
-                'description-print-en_US' => $value5,
-                'release_date-<all_channels>-<all_locales>' => $value6,
-                'weight-<all_channels>-en_US' => $newValue,
-            ]
-        );
-
-        $this->getAttributesKeys()->shouldReturn(['length', 'price', 'description', 'release_date', 'weight']);
-
-        $this->getUniqueValues()->shouldReturn(['release_date-<all_channels>-<all_locales>' => $value6]);
+        $this->getAttributeCodes()->shouldReturn(['length', 'price', 'description', 'release_date', 'weight']);
     }
 
     function it_adds_only_new_value($value1, $value2, $value3, $value4, $value5, $value6)
@@ -555,7 +448,7 @@ class ValueCollectionSpec extends ObjectBehavior
             ]
         );
 
-        $this->getAttributesKeys()->shouldReturn(['length', 'price', 'description', 'release_date']);
+        $this->getAttributeCodes()->shouldReturn(['length', 'price', 'description', 'release_date']);
     }
 
     function it_checks_if_empty()
@@ -575,29 +468,24 @@ class ValueCollectionSpec extends ObjectBehavior
     {
         $this->clear();
         $this->toArray()->shouldReturn([]);
-        $this->getAttributesKeys()->shouldReturn([]);
+        $this->getAttributeCodes()->shouldReturn([]);
     }
 
-    function it_gets_attribute_keys()
+    function it_gets_attribute_codes()
     {
-        $this->getAttributesKeys()->shouldReturn(['length', 'price', 'description', 'release_date']);
-    }
-
-    function it_gets_attributes($length, $price, $description, $releaseDate)
-    {
-        $this->getAttributes()->shouldReturn([$length, $price, $description, $releaseDate]);
+        $this->getAttributeCodes()->shouldReturn(['length', 'price', 'description', 'release_date']);
     }
 
     function it_filters_values()
     {
         $filteredValues = $this->filter(
             function (ValueInterface $value) {
-                return $value->getAttribute()->getCode() === 'length';
+                return $value->getAttributeCode() === 'length';
             }
         );
 
         $filteredValues->shouldBeAnInstanceOf(ValueCollectionInterface::class);
         $filteredValues->count()->shouldReturn(1);
-        $filteredValues->first()->getAttribute()->getCode()->shouldReturn('length');
+        $filteredValues->first()->getAttributeCode()->shouldReturn('length');
     }
 }

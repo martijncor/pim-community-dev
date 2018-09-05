@@ -39,11 +39,15 @@ services:
 
     pim_datagrid.normalizer.product.option:
         class: '%pim_datagrid.normalizer.product.option.class%'
+        arguments:
+            - '@pim_catalog.repository.attribute_option'
         tags:
             - { name: pim_datagrid_serializer.normalizer }
 
     pim_datagrid.normalizer.product.options:
         class: '%pim_datagrid.normalizer.product.options.class%'
+        arguments:
+            - '@pim_catalog.repository.attribute_option'
         tags:
             - { name: pim_datagrid_serializer.normalizer }
 

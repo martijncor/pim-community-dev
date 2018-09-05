@@ -15,7 +15,7 @@ use Akeneo\Tool\Component\StorageUtils\Exception\InvalidPropertyTypeException;
  * @copyright 2017 Akeneo SAS (http://www.akeneo.com)
  * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
  */
-class MetricValueFactory implements ValueFactoryInterface
+class MetricValueFactory extends AbstractValueFactory
 {
     /** @var MetricFactory */
     protected $metricFactory;
@@ -52,14 +52,12 @@ class MetricValueFactory implements ValueFactoryInterface
             ];
         }
 
-        $value = new $this->productValueClass(
+        return $this->doCreate(
             $attribute,
             $channelCode,
             $localeCode,
             $this->metricFactory->createMetric($attribute->getMetricFamily(), $data['unit'], $data['amount'])
         );
-
-        return $value;
     }
 
     /**

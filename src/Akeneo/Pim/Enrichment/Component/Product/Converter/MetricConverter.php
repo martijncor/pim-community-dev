@@ -6,6 +6,7 @@ use Akeneo\Channel\Component\Model\ChannelInterface;
 use Akeneo\Pim\Enrichment\Component\Product\Builder\EntityWithValuesBuilderInterface;
 use Akeneo\Pim\Enrichment\Component\Product\Model\EntityWithValuesInterface;
 use Akeneo\Pim\Enrichment\Component\Product\Model\MetricInterface;
+use Akeneo\Pim\Structure\Component\Repository\AttributeRepositoryInterface;
 use Akeneo\Tool\Bundle\MeasureBundle\Convert\MeasureConverter;
 
 /**
@@ -23,14 +24,21 @@ class MetricConverter
     /** @var EntityWithValuesBuilderInterface */
     protected $entityWithValuesBuilder;
 
+    /** @var AttributeRepositoryInterface */
+    protected $attributeRepository;
+
     /**
      * @param MeasureConverter                 $converter
      * @param EntityWithValuesBuilderInterface $entityWithValuesBuilder
      */
-    public function __construct(MeasureConverter $converter, EntityWithValuesBuilderInterface $entityWithValuesBuilder)
-    {
+    public function __construct(
+        MeasureConverter $converter,
+        EntityWithValuesBuilderInterface $entityWithValuesBuilder,
+        AttributeRepositoryInterface $attributeRepository
+    ) {
         $this->converter               = $converter;
         $this->entityWithValuesBuilder = $entityWithValuesBuilder;
+        $this->attributeRepository     = $attributeRepository;
     }
 
     /**
@@ -44,23 +52,24 @@ class MetricConverter
         $channelUnits = $channel->getConversionUnits();
         foreach ($entityWithValues->getValues() as $value) {
             $data = $value->getData();
-            $attribute = $value->getAttribute();
-            if ($data instanceof MetricInterface && isset($channelUnits[$attribute->getCode()])) {
+            if ($data instanceof MetricInterface && isset($channelUnits[$value->getAttributeCode()])) {
                 if (null === $data->getData()) {
                     continue;
                 }
 
                 $measureFamily = $data->getFamily();
-                $channelUnit = $channelUnits[$attribute->getCode()];
+                $channelUnit = $channelUnits[$value->getAttributeCode()];
                 $amount = $this->converter
                     ->setFamily($measureFamily)
                     ->convert($data->getUnit(), $channelUnit, $data->getData());
 
+                $attribute = $this->attributeRepository->findOneByIdentifier($value->getAttributeCode());
+
                 $this->entityWithValuesBuilder->addOrReplaceValue(
                     $entityWithValues,
                     $attribute,
-                    $value->getLocale(),
-                    $value->getScope(),
+                    $value->getLocaleCode(),
+                    $value->getScopeCode(),
                     ['amount' => $amount, 'unit' => $channelUnit]
                 );
             }

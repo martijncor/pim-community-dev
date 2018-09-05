@@ -20,26 +20,19 @@ use Akeneo\Pim\Structure\Component\Model\AttributeInterface;
  */
 class ScalarValue extends AbstractValue implements ValueInterface
 {
-    /** @var string */
+    /** @var mixed */
     protected $data;
 
     /**
-     * @param AttributeInterface $attribute
-     * @param string             $channel
-     * @param string             $locale
-     * @param mixed              $data
+     * {@inheritdoc}
      */
-    public function __construct(AttributeInterface $attribute, $channel, $locale, $data)
+    protected function __construct(string $attributeCode, $data = null, ?string $scopeCode, ?string $localeCode)
     {
-        $this->setAttribute($attribute);
-        $this->setScope($channel);
-        $this->setLocale($locale);
-
-        $this->data = $data;
+        parent::__construct($attributeCode, $data, $scopeCode, $localeCode);
     }
 
     /**
-     * @return string
+     * @return mixed
      */
     public function getData()
     {
@@ -49,7 +42,7 @@ class ScalarValue extends AbstractValue implements ValueInterface
     /**
      * {@inheritdoc}
      */
-    public function __toString()
+    public function __toString(): string
     {
         return (string) $this->data;
     }

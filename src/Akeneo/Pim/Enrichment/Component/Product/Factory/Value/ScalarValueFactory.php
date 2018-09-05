@@ -15,7 +15,7 @@ use Akeneo\Tool\Component\StorageUtils\Exception\InvalidPropertyTypeException;
  * @copyright 2016 Akeneo SAS (http://www.akeneo.com)
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
-class ScalarValueFactory implements ValueFactoryInterface
+class ScalarValueFactory extends AbstractValueFactory
 {
     /** @var string */
     protected $productValueClass;
@@ -44,9 +44,7 @@ class ScalarValueFactory implements ValueFactoryInterface
             $data = $this->convertData($attribute, $data);
         }
 
-        $value = new $this->productValueClass($attribute, $channelCode, $localeCode, $data);
-
-        return $value;
+        return $this->doCreate($attribute, $channelCode, $localeCode, $data);
     }
 
     /**

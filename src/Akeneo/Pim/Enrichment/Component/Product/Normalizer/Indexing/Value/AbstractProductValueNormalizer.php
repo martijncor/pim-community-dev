@@ -3,6 +3,7 @@
 namespace Akeneo\Pim\Enrichment\Component\Product\Normalizer\Indexing\Value;
 
 use Akeneo\Pim\Enrichment\Component\Product\Model\ValueInterface;
+use Akeneo\Pim\Structure\Component\Repository\AttributeRepositoryInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\SerializerAwareInterface;
 use Symfony\Component\Serializer\SerializerAwareTrait;
@@ -20,15 +21,26 @@ abstract class AbstractProductValueNormalizer implements NormalizerInterface, Se
 {
     use SerializerAwareTrait;
 
+    /** @var AttributeRepositoryInterface */
+    protected $attributeRepository;
+
+
+    public function __construct(AttributeRepositoryInterface $attributeRepository)
+    {
+        $this->attributeRepository = $attributeRepository;
+    }
+
     /**
      * {@inheritdoc}
      */
     public function normalize($productValue, $format = null, array $context = [])
     {
-        $locale = (null === $productValue->getLocale()) ? '<all_locales>' : $productValue->getLocale();
-        $channel = (null === $productValue->getScope()) ? '<all_channels>' : $productValue->getScope();
+        $locale = (null === $productValue->getLocaleCode()) ? '<all_locales>' : $productValue->getLocaleCode();
+        $channel = (null === $productValue->getScopeCode()) ? '<all_channels>' : $productValue->getScopeCode();
 
-        $key = $productValue->getAttribute()->getCode() . '-' . $productValue->getAttribute()->getBackendType();
+        $attribute = $this->attributeRepository->findOneByIdentifier($productValue->getAttributeCode());
+
+        $key = $attribute->getCode() . '-' . $attribute->getBackendType();
         $structure = [];
         $structure[$key][$channel][$locale] = $this->getNormalizedData($productValue);
 

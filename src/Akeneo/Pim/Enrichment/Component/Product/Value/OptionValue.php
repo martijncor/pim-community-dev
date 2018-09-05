@@ -3,8 +3,6 @@
 namespace Akeneo\Pim\Enrichment\Component\Product\Value;
 
 use Akeneo\Pim\Enrichment\Component\Product\Model\AbstractValue;
-use Akeneo\Pim\Structure\Component\Model\AttributeInterface;
-use Akeneo\Pim\Structure\Component\Model\AttributeOptionInterface;
 
 /**
  * Product value for "pim_catalog_simpleselect" attribute type
@@ -15,32 +13,25 @@ use Akeneo\Pim\Structure\Component\Model\AttributeOptionInterface;
  */
 class OptionValue extends AbstractValue implements OptionValueInterface
 {
-    /** @var AttributeOptionInterface */
+    /** @var string Option code */
     protected $data;
 
     /**
-     * @param AttributeInterface            $attribute
-     * @param string                        $channel
-     * @param string                        $locale
-     * @param AttributeOptionInterface|null $data
+     * {@inheritdoc}
      */
-    public function __construct(
-        AttributeInterface $attribute,
-        $channel,
-        $locale,
-        AttributeOptionInterface $data = null
+    protected function __construct(
+        string $attributeCode,
+        ?string $data,
+        ?string $scopeCode,
+        ?string $localeCode
     ) {
-        $this->setAttribute($attribute);
-        $this->setScope($channel);
-        $this->setLocale($locale);
-
-        $this->data = $data;
+        parent::__construct($attributeCode, $data, $scopeCode, $localeCode);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getData()
+    public function getData(): ?string
     {
         return $this->data;
     }
@@ -48,14 +39,8 @@ class OptionValue extends AbstractValue implements OptionValueInterface
     /**
      * {@inheritdoc}
      */
-    public function __toString()
+    public function __toString(): string
     {
-        if (null !== $option = $this->getData()) {
-            $optionValue = $option->getOptionValue();
-
-            return null !== $optionValue ? $optionValue->getValue() : '['.$option->getCode().']';
-        }
-
-        return '';
+        return null !== $this->data ? $this->data : '';
     }
 }

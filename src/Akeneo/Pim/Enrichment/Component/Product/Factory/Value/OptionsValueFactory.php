@@ -16,7 +16,7 @@ use Akeneo\Tool\Component\StorageUtils\Repository\IdentifiableObjectRepositoryIn
  * @copyright 2017 Akeneo SAS (http://www.akeneo.com)
  * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
  */
-class OptionsValueFactory implements ValueFactoryInterface
+class OptionsValueFactory extends AbstractValueFactory
 {
     /** @var IdentifiableObjectRepositoryInterface */
     protected $attrOptionRepository;
@@ -51,16 +51,11 @@ class OptionsValueFactory implements ValueFactoryInterface
 
         if (null === $data) {
             $data = [];
+        } else {
+            sort($data);
         }
 
-        $value = new $this->productValueClass(
-            $attribute,
-            $channelCode,
-            $localeCode,
-            $this->getOptions($attribute, $data)
-        );
-
-        return $value;
+        return $this->doCreate($attribute, $channelCode, $localeCode, $data);
     }
 
     /**
@@ -103,19 +98,7 @@ class OptionsValueFactory implements ValueFactoryInterface
                 );
             }
         }
-    }
 
-    /**
-     * Returns an array of attribute options.
-     *
-     * @param AttributeInterface $attribute
-     * @param string[]           $data
-     *
-     * @throws InvalidOptionsException
-     * @return array
-     */
-    protected function getOptions(AttributeInterface $attribute, array $data)
-    {
         sort($data);
 
         $options = [];
@@ -141,7 +124,5 @@ class OptionsValueFactory implements ValueFactoryInterface
                 $notFoundOptions
             );
         }
-
-        return $options;
     }
 }

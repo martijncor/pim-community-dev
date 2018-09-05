@@ -129,7 +129,7 @@ class ReferenceDataCollectionValueFactorySpec extends ObjectBehavior
         $productValue->shouldHaveAttribute('reference_data_multi_select_attribute');
         $productValue->shouldNotBeLocalizable();
         $productValue->shouldNotBeScopable();
-        $productValue->shouldHaveReferenceData([$silk, $cotton]);
+        $productValue->shouldHaveReferenceData(['silk', 'cotton']);
     }
 
     function it_sorts_reference_data_multi_select_product_value(
@@ -162,7 +162,7 @@ class ReferenceDataCollectionValueFactorySpec extends ObjectBehavior
         $productValue->shouldHaveAttribute('reference_data_multi_select_attribute');
         $productValue->shouldNotBeLocalizable();
         $productValue->shouldNotBeScopable();
-        $productValue->shouldHaveReferenceDataSorted([$cotton, $silk]);
+        $productValue->shouldHaveReferenceDataSorted(['cotton', 'silk']);
     }
 
     function it_creates_a_localizable_and_scopable_reference_data_multi_select_product_value(
@@ -197,7 +197,7 @@ class ReferenceDataCollectionValueFactorySpec extends ObjectBehavior
         $productValue->shouldHaveLocale('en_US');
         $productValue->shouldBeScopable();
         $productValue->shouldHaveChannel('ecommerce');
-        $productValue->shouldHaveReferenceData([$silk, $cotton]);
+        $productValue->shouldHaveReferenceData(['silk', 'cotton']);
     }
 
     function it_throws_an_exception_when_provided_data_is_not_an_array(AttributeInterface $attribute)
@@ -270,19 +270,19 @@ class ReferenceDataCollectionValueFactorySpec extends ObjectBehavior
     {
         return [
             'haveAttribute'     => function ($subject, $attributeCode) {
-                return $subject->getAttribute()->getCode() === $attributeCode;
+                return $subject->getAttributeCode() === $attributeCode;
             },
             'beLocalizable'     => function ($subject) {
-                return null !== $subject->getLocale();
+                return null !== $subject->getLocaleCode();
             },
             'haveLocale'        => function ($subject, $localeCode) {
-                return $localeCode === $subject->getLocale();
+                return $localeCode === $subject->getLocaleCode();
             },
             'beScopable'        => function ($subject) {
-                return null !== $subject->getScope();
+                return null !== $subject->getScopeCode();
             },
             'haveChannel'       => function ($subject, $channelCode) {
-                return $channelCode === $subject->getScope();
+                return $channelCode === $subject->getScopeCode();
             },
             'beEmpty'           => function ($subject) {
                 return is_array($subject->getData()) && 0 === count($subject->getData());

@@ -17,7 +17,7 @@ use Akeneo\Tool\Component\StorageUtils\Repository\IdentifiableObjectRepositoryIn
  * @copyright 2017 Akeneo SAS (http://www.akeneo.com)
  * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
  */
-class OptionValueFactory implements ValueFactoryInterface
+class OptionValueFactory extends AbstractValueFactory
 {
     /** @var IdentifiableObjectRepositoryInterface */
     protected $attrOptionRepository;
@@ -50,13 +50,7 @@ class OptionValueFactory implements ValueFactoryInterface
     {
         $this->checkData($attribute, $data);
 
-        if (null !== $data) {
-            $data = $this->getOption($attribute, $data);
-        }
-
-        $value = new $this->productValueClass($attribute, $channelCode, $localeCode, $data);
-
-        return $value;
+        return $this->doCreate($attribute, $channelCode, $localeCode, $data);
     }
 
     /**
@@ -88,24 +82,8 @@ class OptionValueFactory implements ValueFactoryInterface
                 $data
             );
         }
-    }
 
-    /**
-     * Gets an attribute option from its code.
-     *
-     * @param AttributeInterface $attribute
-     * @param string|null        $optionCode
-     *
-     * @throws InvalidOptionException
-     * @return AttributeOptionInterface|null
-     */
-    protected function getOption(AttributeInterface $attribute, $optionCode)
-    {
-        if (null === $optionCode) {
-            return null;
-        }
-
-        $identifier = $attribute->getCode() . '.' . $optionCode;
+        $identifier = $attribute->getCode() . '.' . $data;
         $option = $this->attrOptionRepository->findOneByIdentifier($identifier);
 
         if (null === $option) {
@@ -114,7 +92,7 @@ class OptionValueFactory implements ValueFactoryInterface
                 'code',
                 'The option does not exist',
                 static::class,
-                $optionCode
+                $data
             );
         }
 

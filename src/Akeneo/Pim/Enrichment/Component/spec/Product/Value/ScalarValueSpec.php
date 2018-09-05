@@ -3,19 +3,16 @@
 namespace spec\Akeneo\Pim\Enrichment\Component\Product\Value;
 
 use PhpSpec\ObjectBehavior;
-use Akeneo\Pim\Structure\Component\Model\AttributeInterface;
 
 class ScalarValueSpec extends ObjectBehavior
 {
-    function let(AttributeInterface $attribute)
+    function let()
     {
-        $attribute->isScopable()->willReturn(true);
-        $attribute->isLocalizable()->willReturn(true);
-        $this->beConstructedWith($attribute, 'ecommerce', 'en_US', 'text');
+        $this->beConstructedThrough('scopableLocalizableValue', ['my_text', 'A nice text', 'ecommerce', 'en_US']);
     }
 
     function it_returns_data()
     {
-        $this->getData()->shouldReturn('text');
+        $this->getData()->shouldReturn('A nice text');
     }
 }

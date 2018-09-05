@@ -2,15 +2,21 @@
 
 ## Technical improvement
 
-- TIP-236: Merge Oro User bundle/component into Akeneo User bundle/component 
+- TIP-236: Merge Oro User bundle/component into Akeneo User bundle/component
 - GITHUB-8451: Add basic compatibility for PHP 7.2  (Thanks [janmyszkier](https://github.com/janmyszkier)!)
 - PIM-7371: Improve the performance to display the category tree in the product grid
+- In order to have a clean and independant product aggregate, ProdiuctValue only provide attribute code and no direct attribute access.
+
 
 ## Enhancements
 
 - TIP-832: Enable regional languages for UI
 
 ## BC breaks
+
+- `AbstractValue->getAttribute()` has been replaced by `AbstractValue->getAttributeCode()`. You will need to inject the AttributeRepository in your service if you need to access the full Attribute object related to the provided attribute code.
+- `AbstractValue->getLocale()` has been renamed to `AbstractValue->getLocaleCode()` to better represent its behaviour
+- `AbstractValue->getScope()` has been renamed to `AbstractValue->getScopeCode()` to better represent its behaviour
 
 - Move `Pim\Component\Catalog\ProductEvents` to `Akeneo\Pim\Enrichment\Component\Product\ProductEvents`
 - Move `Pim\Component\Catalog\FileStorage` to `Akeneo\Pim\Enrichment\Component\FileStorage`

@@ -3,16 +3,13 @@
 namespace spec\Akeneo\Pim\Enrichment\Component\Product\Value;
 
 use PhpSpec\ObjectBehavior;
-use Akeneo\Pim\Structure\Component\Model\AttributeInterface;
 use Akeneo\Pim\Enrichment\Component\Product\Model\MetricInterface;
 
 class MetricValueSpec extends ObjectBehavior
 {
-    function let(AttributeInterface $attribute, MetricInterface $metric)
+    function let(MetricInterface $metric)
     {
-        $attribute->isScopable()->willReturn(true);
-        $attribute->isLocalizable()->willReturn(true);
-        $this->beConstructedWith($attribute, 'ecommerce', 'en_US', $metric);
+        $this->beConstructedThrough('scopableLocalizableValue', ['my_date', $metric, 'ecommerce', 'en_US']);
     }
 
     function it_returns_data($metric)
@@ -25,7 +22,7 @@ class MetricValueSpec extends ObjectBehavior
     {
         $metric->getData()->willReturn(12);
 
-        $this->getAmount()->shouldReturn(12);
+        $this->getAmount()->shouldReturn(12.0);
     }
 
     function it_returns_unit_of_metric($metric)

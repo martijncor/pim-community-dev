@@ -4,6 +4,7 @@ namespace Pim\Bundle\DataGridBundle\Normalizer\Product;
 
 use Akeneo\Pim\Enrichment\Component\Product\Value\OptionValueInterface;
 use Akeneo\Pim\Structure\Component\Model\AttributeOptionInterface;
+use Akeneo\Pim\Structure\Component\Repository\AttributeOptionRepositoryInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 /**
@@ -13,28 +14,39 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
  */
 class OptionNormalizer implements NormalizerInterface
 {
+    /** @var AttributeOptionRepositoryInterface */
+    protected $attributeOptionRepository;
+
+    public function __construct(AttributeOptionRepositoryInterface $attributeOptionRepository)
+    {
+        $this->attributeOptionRepository = $attributeOptionRepository;
+    }
+
     /**
      * {@inheritdoc}
      */
-    public function normalize($option, $format = null, array $context = [])
+    public function normalize($optionValue, $format = null, array $context = [])
     {
-        $optionData = $option->getData();
+        $optionCode = $optionValue->getData();
+        $attributeCode = $optionValue->getAttributeCode();
+
+        $option = $this->attributeOptionRepository->findOneByIdentifier($attributeCode.'.'.$optionCode);
 
         $label = '';
-        if ($optionData instanceof AttributeOptionInterface) {
+        if ($option instanceof AttributeOptionInterface) {
             if (isset($context['data_locale'])) {
-                $optionData->setLocale($context['data_locale']);
+                $option->setLocale($context['data_locale']);
             }
-            $translation = $optionData->getTranslation();
+            $translation = $option->getTranslation();
 
             $label = null !== $translation->getValue() ?
                 $translation->getValue() :
-                sprintf('[%s]', $option->getData()->getCode());
+                sprintf('[%s]', $optionCode);
         }
 
         return [
-            'locale' => $option->getLocale(),
-            'scope'  => $option->getScope(),
+            'locale' => $optionValue->getLocaleCode(),
+            'scope'  => $optionValue->getScopeCode(),
             'data'   => $label
         ];
     }

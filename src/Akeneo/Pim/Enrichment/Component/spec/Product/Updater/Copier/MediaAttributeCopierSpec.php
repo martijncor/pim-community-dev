@@ -222,7 +222,10 @@ class MediaAttributeCopierSpec extends ObjectBehavior
 
         $toValue->getData()->willReturn($toMedia);
 
-        $builder->addOrReplaceValue($product, $toAttribute, $toLocale, $toScope, $fileInfo);
+        $fileInfo->setOriginalFilename('akeneo.jpg')->shouldBeCalled();
+        $fileInfo->getKey()->willReturn('key');
+
+        $builder->addOrReplaceValue($product, $toAttribute, $toLocale, $toScope, "key");
 
         $this->copyAttributeData(
             $product,

@@ -17,7 +17,7 @@ use Akeneo\Tool\Component\StorageUtils\Exception\InvalidPropertyTypeException;
  * @copyright 2017 Akeneo SAS (http://www.akeneo.com)
  * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
  */
-class MediaValueFactory implements ValueFactoryInterface
+class MediaValueFactory extends AbstractValueFactory
 {
     /** @var FileInfoRepositoryInterface */
     protected $fileInfoRepository;
@@ -54,9 +54,7 @@ class MediaValueFactory implements ValueFactoryInterface
             $data = $this->getFileInfo($attribute, $data);
         }
 
-        $value = new $this->productValueClass($attribute, $channelCode, $localeCode, $data);
-
-        return $value;
+        return $this->doCreate($attribute, $channelCode, $localeCode, $data);
     }
 
     /**

@@ -2,7 +2,7 @@
 
 namespace Pim\Component\ReferenceData\Factory\Value;
 
-use Akeneo\Pim\Enrichment\Component\Product\Factory\Value\ValueFactoryInterface;
+use Akeneo\Pim\Enrichment\Component\Product\Factory\Value\AbstractValueFactory;
 use Akeneo\Pim\Structure\Component\Model\AttributeInterface;
 use Akeneo\Tool\Component\StorageUtils\Exception\InvalidPropertyException;
 use Akeneo\Tool\Component\StorageUtils\Exception\InvalidPropertyTypeException;
@@ -19,7 +19,7 @@ use Pim\Component\ReferenceData\Repository\ReferenceDataRepositoryResolverInterf
  * @copyright 2017 Akeneo SAS (http://www.akeneo.com)
  * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
  */
-class ReferenceDataCollectionValueFactory implements ValueFactoryInterface
+class ReferenceDataCollectionValueFactory extends AbstractValueFactory
 {
     /** @var ReferenceDataRepositoryResolverInterface */
     protected $repositoryResolver;
@@ -58,14 +58,12 @@ class ReferenceDataCollectionValueFactory implements ValueFactoryInterface
 
         sort($data);
 
-        $value = new $this->productValueClass(
+        return $this->doCreate(
             $attribute,
             $channelCode,
             $localeCode,
-            $this->getReferenceDataCollection($attribute, $data)
+            $data
         );
-
-        return $value;
     }
 
     /**
@@ -108,64 +106,21 @@ class ReferenceDataCollectionValueFactory implements ValueFactoryInterface
                 );
             }
         }
-    }
-
-    /**
-     * Gets a collection of reference data from an array of codes.
-     *
-     * @param AttributeInterface $attribute
-     * @param array              $referenceDataCodes
-     *
-     * @return array
-     */
-    protected function getReferenceDataCollection(AttributeInterface $attribute, array $referenceDataCodes)
-    {
-        $collection = [];
 
         $repository = $this->repositoryResolver->resolve($attribute->getReferenceDataName());
 
-        foreach ($referenceDataCodes as $referenceDataCode) {
-            $referenceData = $this->getReferenceData($attribute, $repository, $referenceDataCode);
-            if (!in_array($referenceData, $collection, true)) {
-                $collection[] = $referenceData;
+        foreach ($data as $referenceDataCode) {
+            $referenceData = $repository->findOneBy(['code' => $referenceDataCode]);
+
+            if (null === $referenceData) {
+                throw InvalidPropertyException::validEntityCodeExpected(
+                    $attribute->getCode(),
+                    'reference data code',
+                    sprintf('The code of the reference data "%s" does not exist', $attribute->getReferenceDataName()),
+                    static::class,
+                    $referenceDataCode
+                );
             }
         }
-
-        return $collection;
-    }
-
-    /**
-     * Finds a reference data by code.
-     *
-     * @todo TIP-684: When deleting one element of the collection, we will end up throwing the exception.
-     *       Problem is, when loading a product value from single storage, it will be skipped because of
-     *       one reference data, when the others in the collection could be valid. So the value will not
-     *       be loaded at all, when what we want is the value to be loaded minus the wrong reference data.
-     *
-     * @param AttributeInterface $attribute
-     * @param ReferenceDataRepositoryInterface                         $repository
-     * @param string                                                   $referenceDataCode
-     *
-     * @throws InvalidPropertyException
-     * @return ReferenceDataInterface
-     */
-    protected function getReferenceData(
-        AttributeInterface $attribute,
-        ReferenceDataRepositoryInterface $repository,
-        $referenceDataCode
-    ) {
-        $referenceData = $repository->findOneBy(['code' => $referenceDataCode]);
-
-        if (null === $referenceData) {
-            throw InvalidPropertyException::validEntityCodeExpected(
-                $attribute->getCode(),
-                'reference data code',
-                sprintf('The code of the reference data "%s" does not exist', $attribute->getReferenceDataName()),
-                static::class,
-                $referenceDataCode
-            );
-        }
-
-        return $referenceData;
     }
 }

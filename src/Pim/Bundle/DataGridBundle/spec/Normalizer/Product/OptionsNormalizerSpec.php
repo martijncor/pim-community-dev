@@ -6,10 +6,16 @@ use Pim\Bundle\DataGridBundle\Normalizer\Product\OptionsNormalizer;
 use PhpSpec\ObjectBehavior;
 use Akeneo\Pim\Structure\Component\Model\AttributeOptionInterface;
 use Akeneo\Pim\Structure\Component\Model\AttributeOptionValueInterface;
+use Akeneo\Pim\Structure\Component\Repository\AttributeOptionRepositoryInterface;
 use Akeneo\Pim\Enrichment\Component\Product\Value\OptionsValueInterface;
 
 class OptionsNormalizerSpec extends ObjectBehavior
 {
+    function let(AttributeOptionRepositoryInterface $attributeOptionRepository)
+    {
+        $this->beConstructedWith($attributeOptionRepository);
+    }
+
     function it_is_initializable()
     {
         $this->shouldHaveType(OptionsNormalizer::class);
@@ -33,16 +39,21 @@ class OptionsNormalizerSpec extends ObjectBehavior
         AttributeOptionInterface $colorBlue,
         AttributeOptionInterface $colorRed,
         AttributeOptionValueInterface $optionValueBlue,
-        AttributeOptionValueInterface $optionValueRed
+        AttributeOptionValueInterface $optionValueRed,
+        $attributeOptionRepository
     ) {
-        $value->getData()->willReturn([$colorBlue, $colorRed]);
+        $value->getAttributeCode()->willReturn('color');
+        $value->getData()->willReturn(['blue', 'red']);
+        $attributeOptionRepository->findOneByIdentifier('color.blue')->willReturn($colorBlue);
+        $attributeOptionRepository->findOneByIdentifier('color.red')->willReturn($colorRed);
+
         $colorRed->getTranslation('fr_FR')->willReturn($optionValueRed);
         $colorRed->getCode()->willReturn('red');
         $colorBlue->getTranslation('fr_FR')->willReturn($optionValueBlue);
         $optionValueBlue->getValue()->willReturn('Blue');
         $optionValueRed->getValue()->willReturn(null);
-        $value->getLocale()->willReturn(null);
-        $value->getScope()->willReturn(null);
+        $value->getLocaleCode()->willReturn(null);
+        $value->getScopeCode()->willReturn(null);
 
         $data =  [
             'locale' => null,
