@@ -15,22 +15,15 @@ use Pim\Component\ReferenceData\Model\ReferenceDataInterface;
  */
 class ReferenceDataValue extends AbstractValue implements ReferenceDataValueInterface
 {
-    /** @var ReferenceDataInterface */
+    /** @var string */
     protected $data;
 
     /**
-     * @param AttributeInterface          $attribute
-     * @param string                      $channel
-     * @param string                      $locale
-     * @param ReferenceDataInterface|null $data
+     * {@inheritdoc}
      */
-    public function __construct(AttributeInterface $attribute, $channel, $locale, ReferenceDataInterface $data = null)
+    protected function __construct(string $attributeCode, ?string $data, ?string $scopeCode, ?string $localeCode)
     {
-        $this->setAttribute($attribute);
-        $this->setScope($channel);
-        $this->setLocale($locale);
-
-        $this->data = $data;
+        parent::__construct($attributeCode, $data, $scopeCode, $localeCode);
     }
 
     /**
@@ -44,8 +37,8 @@ class ReferenceDataValue extends AbstractValue implements ReferenceDataValueInte
     /**
      * {@inheritdoc}
      */
-    public function __toString()
+    public function __toString(): string
     {
-        return null !== $this->data ? (string) $this->data : '';
+        return null !== $this->data ? $this->data : '';
     }
 }

@@ -3,8 +3,6 @@
 namespace Akeneo\Pim\Enrichment\Component\Product\Value;
 
 use Akeneo\Pim\Enrichment\Component\Product\Model\AbstractValue;
-use Akeneo\Pim\Structure\Component\Model\AttributeInterface;
-use Akeneo\Pim\Structure\Component\Model\AttributeOptionInterface;
 
 /**
  * Product value for "pim_catalog_multiselect" attribute type
@@ -15,28 +13,21 @@ use Akeneo\Pim\Structure\Component\Model\AttributeOptionInterface;
  */
 class OptionsValue extends AbstractValue implements OptionsValueInterface
 {
-    /** @var AttributeOptionInterface[] */
+    /** @var string[] Options codes */
     protected $data;
 
     /**
-     * @param AttributeInterface         $attribute
-     * @param string                     $channel
-     * @param string                     $locale
-     * @param AttributeOptionInterface[] $data
+     * {@inheritdoc}
      */
-    public function __construct(AttributeInterface $attribute, $channel, $locale, array $data = [])
+    protected function __construct(string $attributeCode, ?array $data, ?string $scopeCode, ?string $localeCode)
     {
-        $this->setAttribute($attribute);
-        $this->setScope($channel);
-        $this->setLocale($locale);
-
-        $this->data = $data;
+        parent::__construct($attributeCode, $data, $scopeCode, $localeCode);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getData()
+    public function getData(): ?array
     {
         return $this->data;
     }
@@ -44,41 +35,28 @@ class OptionsValue extends AbstractValue implements OptionsValueInterface
     /**
      * {@inheritdoc}
      */
-    public function hasCode($code)
+    public function hasCode(string $code): bool
     {
-        foreach ($this->data as $option) {
-            if ($option->getCode() === $code) {
-                return true;
-            }
-        }
-
-        return false;
+        return in_array($code, $this->data);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getOptionCodes()
+    public function getOptionCodes(): array
     {
-        $options = [];
-        foreach ($this->data as $option) {
-            $options[] = $option->getCode();
+        if (null === $this->data) {
+            return [];
+        } else {
+            return $this->data;
         }
-
-        return $options;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function __toString()
+    public function __toString(): string
     {
-        $optionValues = [];
-        foreach ($this->data as $option) {
-            $optionValue = $option->getOptionValue();
-            $optionValues[] = null !== $optionValue ? $optionValue->getValue() : '['.$option->getCode().']';
-        }
-
-        return implode(', ', $optionValues);
+        return implode(', ', $this->data);
     }
 }

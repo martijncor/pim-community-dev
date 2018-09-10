@@ -3,17 +3,14 @@
 namespace spec\Akeneo\Pim\Enrichment\Component\Product\Value;
 
 use PhpSpec\ObjectBehavior;
-use Akeneo\Pim\Structure\Component\Model\AttributeInterface;
 use Akeneo\Pim\Enrichment\Component\Product\Model\PriceCollectionInterface;
 use Akeneo\Pim\Enrichment\Component\Product\Model\ProductPriceInterface;
 
 class PriceCollectionValueSpec extends ObjectBehavior
 {
-    function let(AttributeInterface $attribute, PriceCollectionInterface $priceCollection)
+    function let(PriceCollectionInterface $priceCollection)
     {
-        $attribute->isScopable()->willReturn(true);
-        $attribute->isLocalizable()->willReturn(true);
-        $this->beConstructedWith($attribute, 'ecommerce', 'en_US', $priceCollection);
+        $this->beConstructedThrough('scopableLocalizableValue', ['my_prices', $priceCollection, 'ecommerce', 'en_US']);
     }
 
     function it_returns_data($priceCollection)

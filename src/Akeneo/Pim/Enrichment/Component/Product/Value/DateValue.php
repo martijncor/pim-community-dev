@@ -3,7 +3,6 @@
 namespace Akeneo\Pim\Enrichment\Component\Product\Value;
 
 use Akeneo\Pim\Enrichment\Component\Product\Model\AbstractValue;
-use Akeneo\Pim\Structure\Component\Model\AttributeInterface;
 
 /**
  * Product value for "pim_catalog_date" attribute types
@@ -18,24 +17,17 @@ class DateValue extends AbstractValue implements DateValueInterface
     protected $data;
 
     /**
-     * @param AttributeInterface $attribute
-     * @param string             $channel
-     * @param string             $locale
-     * @param \DateTime|null     $data
+     * {@inheritdoc}
      */
-    public function __construct(AttributeInterface $attribute, $channel, $locale, \DateTime $data = null)
+    protected function __construct(string $attributeCode, ?\DateTime $data, ?string $scopeCode, ?string $localeCode)
     {
-        $this->setAttribute($attribute);
-        $this->setScope($channel);
-        $this->setLocale($locale);
-
-        $this->data = $data;
+        parent::__construct($attributeCode, $data, $scopeCode, $localeCode);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getData()
+    public function getData(): ?\DateTime
     {
         return $this->data;
     }
@@ -43,7 +35,7 @@ class DateValue extends AbstractValue implements DateValueInterface
     /**
      * {@inheritdoc}
      */
-    public function __toString()
+    public function __toString(): string
     {
         return null !== $this->data ? $this->data->format('Y-m-d') : '';
     }
