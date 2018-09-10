@@ -58,7 +58,7 @@ class UpdateVariantProductIntegration extends TestCase
         $errors = $this->get('pim_catalog.validator.product')->validate($product);
         $this->assertEquals(1, $errors->count());
         $this->assertEquals(
-            'Variant axis "size" cannot be modified, "[xs]" given',
+            'Variant axis "size" cannot be modified, "xs" given',
             $errors->get(0)->getMessage()
         );
     }

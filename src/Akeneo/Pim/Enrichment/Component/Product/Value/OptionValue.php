@@ -41,6 +41,6 @@ class OptionValue extends AbstractValue implements OptionValueInterface
      */
     public function __toString(): string
     {
-        return null !== '['.$this->data.']' ? $this->data : '';
+        return null !== $this->data ? '['.$this->data.']' : '';
     }
 }

@@ -49,8 +49,8 @@ class CreateProductModelIntegration extends TestCase
         $this->assertEquals($productModel->getCategoryCodes(), ['tshirts']);
 
         $sku = $productModel->getValues()->first();
-        $this->assertEquals($sku->getLocale(), 'fr_FR');
-        $this->assertEquals($sku->getScope(), 'mobile');
+        $this->assertEquals($sku->getLocaleCode(), 'fr_FR');
+        $this->assertEquals($sku->getScopeCode(), 'mobile');
         $this->assertEquals($sku->getData(), 'T-shirt super beau');
     }
 
@@ -263,7 +263,7 @@ class CreateProductModelIntegration extends TestCase
         $productModelDuplicate->setParent($productModelParent);
         $errors = $this->get('pim_catalog.validator.product_model')->validate($productModelDuplicate);
         $this->assertEquals(
-            'Cannot set value "[blue]" for the attribute axis "color" on product model "product_model_duplicate_code", as the product model "product_model_code" already has this value',
+            'Cannot set value "blue" for the attribute axis "color" on product model "product_model_duplicate_code", as the product model "product_model_code" already has this value',
             $errors->get(0)->getMessage()
         );
     }
@@ -321,7 +321,7 @@ class CreateProductModelIntegration extends TestCase
         $productModelDuplicate->setParent($productModelParent);
         $errors = $this->get('pim_catalog.validator.product_model')->validate($productModelDuplicate);
         $this->assertEquals(
-            'Cannot set value "[blue]" for the attribute axis "color" on product model "product_model_duplicate_code", as the product model "product_model_code" already has this value',
+            'Cannot set value "blue" for the attribute axis "color" on product model "product_model_duplicate_code", as the product model "product_model_code" already has this value',
             $errors->get(0)->getMessage()
         );
     }

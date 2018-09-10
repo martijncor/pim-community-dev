@@ -36,9 +36,10 @@ class ProductValuesFiller extends AbstractEntityWithFamilyValuesFiller
         $attributes = [];
 
         // TODO: remove this when optional attributes are gone
-        $productAttributes = $entity->getAttributes();
-        foreach ($productAttributes as $attribute) {
-            $attributes[$attribute->getCode()] = $attribute;
+        $productAttributeCodes = $entity->getUsedAttributeCodes();
+
+        foreach ($entity->getUsedAttributeCodes() as $productAttributeCode) {
+            $attributes[$productAttributeCode] = $this->attributeRepository->findOneByIdentifier($productAttributeCode);
         }
 
         $family = $entity->getFamily();

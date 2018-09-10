@@ -72,7 +72,7 @@ class UpdateProductModelIntegration extends TestCase
         $errors = $this->get('pim_catalog.validator.product_model')->validate($productModel);
         $this->assertEquals(1, $errors->count());
         $this->assertEquals(
-            'Variant axis "color" cannot be modified, "[black]" given',
+            'Variant axis "color" cannot be modified, "black" given',
             $errors->get(0)->getMessage()
         );
     }
