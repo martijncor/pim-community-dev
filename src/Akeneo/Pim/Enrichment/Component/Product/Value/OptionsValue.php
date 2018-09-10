@@ -57,6 +57,12 @@ class OptionsValue extends AbstractValue implements OptionsValueInterface
      */
     public function __toString(): string
     {
-        return implode(', ', $this->data);
+        $formattedOptionCodes = [];
+
+        foreach ($this->data as $optionCode) {
+            $formattedOptionCodes[] = '['.$optionCode.']';
+        }
+
+        return implode(', ', $formattedOptionCodes);
     }
 }
