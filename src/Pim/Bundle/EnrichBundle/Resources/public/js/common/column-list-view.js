@@ -5,13 +5,15 @@ define([
     'underscore',
     'oro/translator',
     'backbone',
-    'pim/template/datagrid/configure-columns-action'
+    'pim/template/datagrid/configure-columns-action',
+    'routing'
 ], function (
     $,
     _,
     __,
     Backbone,
-    template
+    template,
+    Routing
 ) {
     var Column = Backbone.Model.extend({
         defaults: {
@@ -28,6 +30,10 @@ define([
 
         template: _.template(template),
 
+        searchTimer: null,
+
+        searchValue: null,
+
         events: {
             'input input[type="search"]':      'search',
             'click .nav-list li':              'filter',
@@ -35,8 +41,51 @@ define([
             'click #column-selection .action': 'remove'
         },
 
+        // @TODO - add scroll pagination and loading
+        // @TODO - re-render only the list of columns
+        doSearch() {
+            console.log('this.collection.url', this.collection.url)
+            // add the search param here
+            this.collection.fetch({
+                success: data => {
+                    console.log('fetched the collection with data', data)
+                    this.render()
+                    // this.$('input[type="search"]').focus();
+                }
+            })
+
+        },
+
+        // implement request search
         search: function (e) {
             var search = $(e.currentTarget).val();
+
+            console.log('search', this)
+
+            if (true === this.options.paginatedSearch) {
+                this.searchValue = search
+
+                let route = Routing.generate(this.options.route);
+
+                if (this.searchValue && 0 !== this.searchValue.trim().length) {
+                    route = `${Routing.generate(this.options.route)}?search=${this.searchValue.toLowerCase()}`
+                }
+
+                this.collection.url = route
+
+                if (null !== this.searchTimer) {
+                    clearTimeout(this.searchTimer)
+                }
+
+                if (13 === e.keyCode) {
+                    this.searchValue = null;
+                    this.doSearch()
+                } else {
+                    this.searchTimer = setTimeout(this.doSearch.bind(this), 300)
+                }
+
+                return;
+            }
 
             var matchesSearch = function (text) {
                 return ('' + text).toUpperCase().indexOf(('' + search).toUpperCase()) >= 0;
@@ -123,7 +172,8 @@ define([
                     description: __('pim_datagrid.column_configurator.description'),
                     attributeGroupsLabel: __('pim_enrich.entity.attribute_group.plural_label'),
                     groups:  groups,
-                    columns: this.collection.toJSON()
+                    columns: this.collection.toJSON(),
+                    searchValue: this.searchValue
                 })
             );
 
